@@ -18,17 +18,10 @@ namespace angelasFunctionApp2.Functions
             _logger = logger;
         }
 
-        [Function("DeleteProduct")]
-        public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Function, "delete", Route = "products/{id}")] HttpRequest req, Guid id)
+        [Function("DeleteOneProduct")]
+        public async Task<IActionResult> DeleteOneProduct([HttpTrigger(AuthorizationLevel.Function, "delete", Route = "products/{id}")] HttpRequest req, Guid id)
         {
-            string expectedKey = Environment.GetEnvironmentVariable("MyFunctionKey");
-            string functionKey = req.Headers["x-functions-key"];
-
-            if (functionKey != expectedKey)
-            {
-                return new UnauthorizedResult();
-            }
-
+           
             var productToDelete = await _context.Products.FindAsync(id);
             if (productToDelete is null)
             {

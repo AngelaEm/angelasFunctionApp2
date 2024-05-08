@@ -24,14 +24,7 @@ namespace angelasFunctionApp2.Functions
         [Function("UpdateProduct")]
         public async Task<IActionResult> UpdateProduct([HttpTrigger(AuthorizationLevel.Function, "put", Route = "products/{id}")] HttpRequest req, Guid id)
         {
-            string expectedKey = Environment.GetEnvironmentVariable("MyFunctionKey");
-            string functionKey = req.Headers["x-functions-key"];
-
-            if (functionKey != expectedKey)
-            {
-                return new UnauthorizedResult();
-            }
-
+            
             var product = await _context.Products.FindAsync(id);
             
             if (product is null)

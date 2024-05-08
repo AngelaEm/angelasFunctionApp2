@@ -19,18 +19,10 @@ namespace angelasFunctionApp2.Functions
             _logger = logger;
         }
 
-        [Function("GetAllProducts")]
-        public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Function, "get", Route = "products")] HttpRequest req)
+        [Function("GetProducts")]
+        public async Task<IActionResult> GetProducts([HttpTrigger(AuthorizationLevel.Function, "get", Route = "products")] HttpRequest req)
         {
-            string expectedKey = Environment.GetEnvironmentVariable("MyFunctionKey");
-            string functionKey = req.Headers["x-functions-key"];
-
-
-            if (functionKey != expectedKey)
-            {
-                return new UnauthorizedResult();
-            }
-
+           
             if (req.Method == HttpMethods.Get)
             {
                 var product = await _context.Products.ToListAsync();
