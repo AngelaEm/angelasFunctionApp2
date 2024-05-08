@@ -12,11 +12,12 @@ namespace angelasFunctionApp2.Functions
     public class CreateProduct
     {
         private readonly AppDbContext _context;
+        private readonly ILogger<CreateProduct> _logger;
 
-
-        public CreateProduct(AppDbContext context)
+        public CreateProduct(AppDbContext context, ILogger<CreateProduct> logger)
         {
             _context = context;
+            _logger = logger;
         }
 
         [Function("CreateProduct")]
@@ -37,6 +38,8 @@ namespace angelasFunctionApp2.Functions
                 var product = JsonConvert.DeserializeObject<Products>(requestBody);
                 _context.Products.Add(product);
                 await _context.SaveChangesAsync();
+
+                _logger.LogInformation("Create product");
                 return new CreatedResult("/products", product);
 
             }

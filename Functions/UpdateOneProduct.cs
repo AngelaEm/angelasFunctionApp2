@@ -12,14 +12,17 @@ namespace angelasFunctionApp2.Functions
     public class UpdateOneProduct
     {
         private readonly AppDbContext _context;
+        private readonly ILogger<UpdateOneProduct> _logger;
 
-        public UpdateOneProduct(AppDbContext context)
+      
+        public UpdateOneProduct(AppDbContext context, ILogger<UpdateOneProduct> logger)
         {
             _context = context;
+            _logger = logger;
         }
 
         [Function("UpdateProduct")]
-        public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Function, "put", Route = "products/{id}")] HttpRequest req, Guid id)
+        public async Task<IActionResult> UpdateProduct([HttpTrigger(AuthorizationLevel.Function, "put", Route = "products/{id}")] HttpRequest req, Guid id)
         {
             string expectedKey = Environment.GetEnvironmentVariable("MyFunctionKey");
             string functionKey = req.Headers["x-functions-key"];
@@ -29,21 +32,23 @@ namespace angelasFunctionApp2.Functions
                 return new UnauthorizedResult();
             }
 
-            string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-            var updatedProductData = JsonConvert.DeserializeObject<Products>(requestBody);
-
             var product = await _context.Products.FindAsync(id);
+            
             if (product is null)
             {
                 return new NotFoundResult();
             }
 
-            product.Name = updatedProductData.Name;
-            product.Price = updatedProductData.Price;
+            string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
+            var newData = JsonConvert.DeserializeObject<Products>(requestBody);
+
+            product.Name = newData.Name;
+            product.Price = newData.Price;
 
             _context.Products.Update(product);
             await _context.SaveChangesAsync();
 
+            _logger.LogInformation("Updated product");
             return new OkObjectResult(product);
         }
     }

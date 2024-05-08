@@ -11,11 +11,12 @@ namespace angelasFunctionApp2.Functions
     public class GetAllProducts
     {
         private readonly AppDbContext _context;
+        private readonly ILogger<GetAllProducts> _logger;
 
-
-        public GetAllProducts(AppDbContext context)
+        public GetAllProducts(AppDbContext context, ILogger<GetAllProducts> logger)
         {
             _context = context;
+            _logger = logger;
         }
 
         [Function("GetAllProducts")]
@@ -33,6 +34,8 @@ namespace angelasFunctionApp2.Functions
             if (req.Method == HttpMethods.Get)
             {
                 var product = await _context.Products.ToListAsync();
+
+                _logger.LogInformation("Get products");
                 return new OkObjectResult(product);
             }
             else

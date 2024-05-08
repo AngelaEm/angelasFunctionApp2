@@ -10,10 +10,12 @@ namespace angelasFunctionApp2.Functions
     {
        
         private readonly AppDbContext _context;
+        private readonly ILogger<DeleteProduct> _logger;
 
-        public DeleteProduct(AppDbContext context)
+        public DeleteProduct(AppDbContext context, ILogger<DeleteProduct> logger)
         {
             _context = context;
+            _logger = logger;
         }
 
         [Function("DeleteProduct")]
@@ -35,6 +37,8 @@ namespace angelasFunctionApp2.Functions
 
             _context.Products.Remove(productToDelete);
             await _context.SaveChangesAsync();
+
+            _logger.LogInformation("Deleted product");
             return new NoContentResult();
 
 
